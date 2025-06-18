@@ -43,6 +43,18 @@ func (h *AuthHandler) Register(ctx *gin.Context) {
 	})
 }
 
-// func (h *AuthHandler) GetUserByEmail(ctx *gin.Context) {
+func (h *AuthHandler) GetUserByEmail(ctx *gin.Context) {
+	email := ctx.Query("email")
+	user, error := h.service.GetUserByEmail(email)
+	if error != nil {
+		ctx.JSON(404, gin.H{
+			"error": "User not found",
+		})
+	}
 
-// }
+	ctx.JSON(200, gin.H{
+		"id":       user.Id,
+		"username": user.Username,
+		"email":    user.Email,
+	})
+}

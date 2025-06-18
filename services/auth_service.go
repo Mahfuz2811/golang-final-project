@@ -10,10 +10,13 @@ import (
 )
 
 type AuthService struct {
-	userRepo *repositories.UserRepositoy
+	userRepo repositories.UserRepository
 }
 
-func NewAuthServe(userRepo *repositories.UserRepositoy) *AuthService {
+// concreate type
+// no way mock
+
+func NewAuthServe(userRepo repositories.UserRepository) *AuthService {
 	return &AuthService{
 		userRepo: userRepo,
 	}
@@ -36,6 +39,7 @@ func (s *AuthService) RegisterUser(username, email, password string) error {
 	}
 
 	existingUser, err := s.userRepo.GetByEmail(email)
+	fmt.Println("Existing User:", existingUser)
 	if existingUser != nil || err != nil {
 		return fmt.Errorf("user already exists or error: %s", err)
 	}

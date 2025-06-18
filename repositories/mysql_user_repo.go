@@ -6,17 +6,17 @@ import (
 	"fmt"
 )
 
-type UserRepositoy struct {
+type MySQLUserRepositoy struct {
 	db *sql.DB
 }
 
-func NewUserRepositoy(db *sql.DB) *UserRepositoy {
-	return &UserRepositoy{
+func NewMySQLUserRepositoy(db *sql.DB) *MySQLUserRepositoy {
+	return &MySQLUserRepositoy{
 		db: db,
 	}
 }
 
-func (r *UserRepositoy) Create(user models.User) error {
+func (r *MySQLUserRepositoy) Create(user models.User) error {
 	query := "INSERT INTO users (username, email, password, is_verified, verification_token) VALUES(?, ?, ?, ?, ?)"
 	_, err := r.db.Exec(query, user.Username, user.Email, user.PasswordHash, user.IsVerified, user.VerificationToken)
 	if err != nil {
@@ -26,7 +26,7 @@ func (r *UserRepositoy) Create(user models.User) error {
 	return err
 }
 
-func (r *UserRepositoy) GetByEmail(email string) (*models.User, error) {
+func (r *MySQLUserRepositoy) GetByEmail(email string) (*models.User, error) {
 	query := "SELECT id, username, email, password, is_verified, verification_token FROM users where email = ?"
 	row := r.db.QueryRow(query, email)
 
