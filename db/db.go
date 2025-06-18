@@ -18,7 +18,7 @@ func NewMySqlDB() (*sql.DB, error) {
 	}
 
 	if err := database.Ping(); err != nil {
-		return nil, fmt.Errorf("error opening DB: %s", err)
+		return nil, fmt.Errorf("error pinging DB: %s", err)
 	}
 
 	DB = database

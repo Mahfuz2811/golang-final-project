@@ -18,7 +18,7 @@ func main() {
 		panic(error)
 	}
 
-	redisClient, error := redis.NewsRedisClient()
+	redisClient, error := redis.NewRedisClient()
 	if error != nil {
 		panic(error)
 	}

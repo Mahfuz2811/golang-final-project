@@ -50,6 +50,12 @@ func (h *AuthHandler) GetUserByEmail(ctx *gin.Context) {
 		ctx.JSON(404, gin.H{
 			"error": "User not found",
 		})
+		return
+	}
+
+	if user == nil {
+		ctx.JSON(404, gin.H{"error": "user not found"})
+		return
 	}
 
 	ctx.JSON(200, gin.H{
