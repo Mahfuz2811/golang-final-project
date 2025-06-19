@@ -1,12 +1,14 @@
 package services
 
 import (
+	"errors"
 	"final-golang-project/models"
 	"final-golang-project/repositories"
 	utils "final-golang-project/utlis"
 	"fmt"
 
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthService struct {
@@ -52,6 +54,21 @@ func (s *AuthService) RegisterUser(username, email, password string) error {
 	utils.SendVerificationEmail(email, verificationToken)
 
 	return nil
+}
+
+func (s *AuthService) Login(email, password string) (*models.User, error) {
+	user, err := s.userRepo.GetByEmail(email)
+	if err != nil || user == nil {
+		return nil, errors.New("invalid email or password")
+	}
+
+	// Compare hashed password
+	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
+	if err != nil {
+		return nil, errors.New("invalid email or password")
+	}
+
+	return user, nil
 }
 
 func (s *AuthService) GetUserByEmail(email string) (*models.User, error) {

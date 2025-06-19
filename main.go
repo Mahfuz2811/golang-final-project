@@ -30,6 +30,7 @@ func main() {
 
 	router := gin.Default()
 	router.POST("/register", authHandler.Register)
+	router.POST("/login", authHandler.Login)
 	router.GET("/user", authHandler.GetUserByEmail)
 
 	fmt.Println("Starting server on :8080...")

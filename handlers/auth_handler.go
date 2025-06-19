@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"final-golang-project/services"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,6 +15,11 @@ type RegisterRequest struct {
 	Username string `json:"username" binding:"required"`
 	Email    string `json:"email" binding:"required,email"`
 	Pasword  string `json:"password" binding:"required,min=6"`
+}
+
+type LoginRequest struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
 }
 
 func NewAuthHandler(service *services.AuthService) *AuthHandler {
@@ -40,6 +46,32 @@ func (h *AuthHandler) Register(ctx *gin.Context) {
 
 	ctx.JSON(201, gin.H{
 		"message": "User registered successfully",
+	})
+}
+
+func (h *AuthHandler) Login(c *gin.Context) {
+	var req LoginRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   err.Error(),
+			"message": "validation error",
+		})
+		return
+	}
+
+	user, err := h.service.Login(req.Email, req.Password)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid email or password"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Login successful",
+		"user": gin.H{
+			"id":    user.Id,
+			"name":  user.Username,
+			"email": user.Email,
+		},
 	})
 }
 
