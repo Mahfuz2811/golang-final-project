@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"final-golang-project/services"
+	"final-golang-project/utils"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +14,11 @@ type AuthHandler struct {
 
 type RegisterRequest struct {
 	Username string `json:"username" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=6"`
+}
+
+type LoginRequest struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=6"`
 }
@@ -44,8 +50,39 @@ func (h *AuthHandler) Register(ctx *gin.Context) {
 	})
 }
 
+func (h *AuthHandler) Login(ctx *gin.Context) {
+	var request LoginRequest
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(422, gin.H{"error": "Validation error"})
+		return
+	}
+
+	user, err := h.service.Login(request.Email, request.Password)
+	if err != nil {
+		ctx.JSON(500, gin.H{
+			"error": "invalid email or password",
+		})
+
+		return
+	}
+
+	token, error := utils.GenerateJwt(user.Email)
+	if error != nil {
+		ctx.JSON(500, gin.H{
+			"error": "invalid email or password",
+		})
+
+		return
+	}
+
+	ctx.JSON(201, gin.H{
+		"message": "Login successfull",
+		"token":   token,
+	})
+}
+
 func (h *AuthHandler) GetUserByEmail(ctx *gin.Context) {
-	email := ctx.Query("email")
+	email := ctx.GetString("email")
 	user, error := h.service.GetUserByEmail(email)
 	fmt.Println("User:", user)
 	if error != nil || user == nil {

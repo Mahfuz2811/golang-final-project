@@ -3,9 +3,11 @@ package main
 import (
 	"final-golang-project/db"
 	"final-golang-project/handlers"
+	"final-golang-project/middlewares"
 	"final-golang-project/redis"
 	"final-golang-project/repositories"
 	"final-golang-project/services"
+	"final-golang-project/utils"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -23,14 +25,18 @@ func main() {
 		panic(error)
 	}
 
+	emailSender := utils.DefaultEmailSender{}
+
 	userRepo := repositories.NewMySQLUserRepository(database)
 	redisMySQLUserRepo := repositories.NewRedisMySQLUserRepository(userRepo, redisClient)
-	authService := services.NewAuthServe(redisMySQLUserRepo)
+	authService := services.NewAuthServe(redisMySQLUserRepo, &emailSender)
 	authHandler := handlers.NewAuthHandler(authService)
 
 	router := gin.Default()
 	router.POST("/register", authHandler.Register)
-	router.GET("/user", authHandler.GetUserByEmail)
+	router.POST("/login", authHandler.Login)
+
+	router.GET("/user", middlewares.JWTAuthMiddleware(), authHandler.GetUserByEmail)
 
 	fmt.Println("Starting server on :8080...")
 	if error := router.Run(":8080"); error != nil {

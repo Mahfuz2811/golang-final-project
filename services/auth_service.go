@@ -1,24 +1,28 @@
 package services
 
 import (
+	"errors"
 	"final-golang-project/models"
 	"final-golang-project/repositories"
 	utils "final-golang-project/utils"
 	"fmt"
 
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthService struct {
-	userRepo repositories.UserRepository
+	userRepo    repositories.UserRepository
+	emailSender EmailSender
 }
 
 // concreate type
 // no way mock
 
-func NewAuthServe(userRepo repositories.UserRepository) *AuthService {
+func NewAuthServe(userRepo repositories.UserRepository, emailSender EmailSender) *AuthService {
 	return &AuthService{
-		userRepo: userRepo,
+		userRepo:    userRepo,
+		emailSender: emailSender,
 	}
 }
 
@@ -40,8 +44,16 @@ func (s *AuthService) RegisterUser(username, email, password string) error {
 
 	existingUser, err := s.userRepo.GetByEmail(email)
 	fmt.Println("Existing User:", existingUser)
-	if existingUser != nil || err != nil {
-		return fmt.Errorf("user already exists or error: %s", err)
+	// if existingUser != nil || err != nil {
+	// 	return fmt.Errorf("user already exists or error: %s", err)
+	// }
+
+	if err != nil {
+		return fmt.Errorf("failed to check existing user: %s", err)
+	}
+
+	if existingUser != nil {
+		return fmt.Errorf("user already exists")
 	}
 
 	if err := s.userRepo.Create(user); err != nil {
@@ -49,9 +61,25 @@ func (s *AuthService) RegisterUser(username, email, password string) error {
 	}
 
 	// send verification email
-	utils.SendVerificationEmail(email, verificationToken)
+	s.emailSender.SendVerificationEmail(email, verificationToken)
 
 	return nil
+}
+
+func (s *AuthService) Login(email, password string) (*models.User, error) {
+	user, err := s.userRepo.GetByEmail(email)
+	if err != nil || user == nil {
+		return nil, errors.New("invalid email or password")
+	}
+
+	// user->password, provided password
+
+	error := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
+	if error != nil {
+		return nil, errors.New("invalid email or password")
+	}
+
+	return user, nil
 }
 
 func (s *AuthService) GetUserByEmail(email string) (*models.User, error) {
