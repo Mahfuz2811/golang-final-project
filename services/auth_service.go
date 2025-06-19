@@ -3,7 +3,7 @@ package services
 import (
 	"final-golang-project/models"
 	"final-golang-project/repositories"
-	utils "final-golang-project/utlis"
+	utils "final-golang-project/utils"
 	"fmt"
 
 	"github.com/google/uuid"

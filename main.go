@@ -18,12 +18,12 @@ func main() {
 		panic(error)
 	}
 
-	redisClient, error := redis.NewsRedisClient()
+	redisClient, error := redis.NewRedisClient()
 	if error != nil {
 		panic(error)
 	}
 
-	userRepo := repositories.NewMySQLUserRepositoy(database)
+	userRepo := repositories.NewMySQLUserRepository(database)
 	redisMySQLUserRepo := repositories.NewRedisMySQLUserRepository(userRepo, redisClient)
 	authService := services.NewAuthServe(redisMySQLUserRepo)
 	authHandler := handlers.NewAuthHandler(authService)
