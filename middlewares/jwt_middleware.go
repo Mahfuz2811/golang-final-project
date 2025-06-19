@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	utils "final-golang-project/utlis"
+	utils "final-golang-project/utils"
 	"fmt"
 	"net/http"
 	"strings"

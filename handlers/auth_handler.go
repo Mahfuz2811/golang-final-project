@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"final-golang-project/services"
-	utils "final-golang-project/utlis"
+	utils "final-golang-project/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,7 +15,7 @@ type AuthHandler struct {
 type RegisterRequest struct {
 	Username string `json:"username" binding:"required"`
 	Email    string `json:"email" binding:"required,email"`
-	Pasword  string `json:"password" binding:"required,min=6"`
+	Password string `json:"password" binding:"required,min=6"`
 }
 
 type LoginRequest struct {
@@ -36,7 +36,7 @@ func (h *AuthHandler) Register(ctx *gin.Context) {
 		return
 	}
 
-	err := h.service.RegisterUser(request.Username, request.Email, request.Pasword)
+	err := h.service.RegisterUser(request.Username, request.Email, request.Password)
 	if err != nil {
 		ctx.JSON(500, gin.H{
 			"error": "Failed to register",

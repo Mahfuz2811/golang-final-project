@@ -7,6 +7,7 @@ import (
 	"final-golang-project/redis"
 	"final-golang-project/repositories"
 	"final-golang-project/services"
+	utils "final-golang-project/utils"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -24,9 +25,11 @@ func main() {
 		panic(error)
 	}
 
+	emailSender := utils.DefaultEmailSender{}
+
 	userRepo := repositories.NewMySQLUserRepositoy(database)
 	redisMySQLUserRepo := repositories.NewRedisMySQLUserRepository(userRepo, redisClient)
-	authService := services.NewAuthServe(redisMySQLUserRepo)
+	authService := services.NewAuthServe(redisMySQLUserRepo, &emailSender)
 	authHandler := handlers.NewAuthHandler(authService)
 
 	router := gin.Default()
