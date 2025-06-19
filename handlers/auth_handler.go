@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"final-golang-project/services"
+	utils "final-golang-project/utlis"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -65,18 +66,20 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
+	token, err := utils.GenerateJwt(user.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Login successful",
-		"user": gin.H{
-			"id":    user.Id,
-			"name":  user.Username,
-			"email": user.Email,
-		},
+		"token":   token,
 	})
 }
 
 func (h *AuthHandler) GetUserByEmail(ctx *gin.Context) {
-	email := ctx.Query("email")
+	email := ctx.GetString("email")
 	user, error := h.service.GetUserByEmail(email)
 	if error != nil {
 		ctx.JSON(404, gin.H{
