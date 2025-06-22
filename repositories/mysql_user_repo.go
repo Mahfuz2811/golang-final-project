@@ -31,7 +31,7 @@ func (r *MySQLUserRepository) GetByEmail(email string) (*models.User, error) {
 	row := r.db.QueryRow(query, email)
 
 	var user models.User
-	error := row.Scan(&user.Id, &user.Username, &user.Email, &user.PasswordHash, &user.IsVerified, &user.VerificationToken)
+	error := row.Scan(&user.ID, &user.Username, &user.Email, &user.PasswordHash, &user.IsVerified, &user.VerificationToken)
 	if error != nil {
 		if error == sql.ErrNoRows {
 			return nil, nil // User not found

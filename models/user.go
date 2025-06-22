@@ -1,12 +1,23 @@
 package models
 
+import "gorm.io/gorm"
+
+// type User struct {
+// 	Id                int
+// 	Username          string
+// 	Email             string
+// 	PasswordHash      string
+// 	IsVerified        bool
+// 	VerificationToken string
+// }
+
 type User struct {
-	Id                int
-	Username          string
-	Email             string
-	PasswordHash      string
+	gorm.Model               // Includes ID, CreatedAt, UpdatedAt, DeletedAt
+	Username          string `gorm:"size:100;not null"`
+	Email             string `gorm:"size:100;uniqueIndex;not null"`
+	PasswordHash      string `gorm:"column:password;not null"`
 	IsVerified        bool
-	VerificationToken string
+	VerificationToken string `gorm:"size:255"`
 }
 
 // CREATE TABLE users (

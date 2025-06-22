@@ -1,3 +1,23 @@
+
+type Product struct {
+	gorm.Model         // Includes ID, CreatedAt, UpdatedAt, DeletedAt
+	Name        string `gorm:"size:255;not null"`
+	Description string `gorm:"type:text"`
+	Price       float64
+	UserEmail   string `gorm:"index;not null"` // FK by email for simplicity
+}
+
+type User struct {
+	gorm.Model               // Includes ID, CreatedAt, UpdatedAt, DeletedAt
+	Username          string `gorm:"size:100;not null"`
+	Email             string `gorm:"size:100;uniqueIndex;not null"`
+	PasswordHash      string `gorm:"not null"`
+	IsVerified        bool
+	VerificationToken string `gorm:"size:255"`
+}
+
+
+
 package services
 
 import (

@@ -94,7 +94,7 @@ func (h *AuthHandler) GetUserByEmail(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, gin.H{
-		"id":       user.Id,
+		"id":       user.ID,
 		"username": user.Username,
 		"email":    user.Email,
 	})
