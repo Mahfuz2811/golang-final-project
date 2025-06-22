@@ -16,3 +16,11 @@ func NewProductService(repo *repositories.ProductRepository) *ProductService {
 func (s *ProductService) CreateProduct(product *models.Product) error {
 	return s.repo.Create(product)
 }
+
+func (s *ProductService) ListProducts() ([]models.Product, error) {
+	products, err := s.repo.List()
+	if err != nil {
+		return nil, err
+	}
+	return products, nil
+}

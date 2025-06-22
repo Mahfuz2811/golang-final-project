@@ -1,7 +1,9 @@
 package models
 
+import "gorm.io/gorm"
+
 type Product struct {
-	ID          uint   `gorm:"primaryKey"`
+	gorm.Model         // Includes ID, CreatedAt, UpdatedAt, DeletedAt
 	Name        string `gorm:"size:255;not null"`
 	Description string `gorm:"type:text"`
 	Price       float64

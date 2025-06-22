@@ -23,7 +23,7 @@ func (h *ProductHandler) Create(c *gin.Context) {
 		return
 	}
 
-	userEmail := c.GetString("user_email")
+	userEmail := c.GetString("email")
 	if userEmail == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
@@ -36,4 +36,14 @@ func (h *ProductHandler) Create(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Product created successfully", "product": product})
+}
+
+func (h *ProductHandler) List(c *gin.Context) {
+	products, err := h.service.ListProducts()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"products": products})
 }

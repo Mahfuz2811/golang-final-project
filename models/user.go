@@ -1,5 +1,7 @@
 package models
 
+import "gorm.io/gorm"
+
 // type User struct {
 // 	Id                int
 // 	Username          string
@@ -10,10 +12,10 @@ package models
 // }
 
 type User struct {
-	Id                uint   `gorm:"primaryKey"`
+	gorm.Model               // Includes ID, CreatedAt, UpdatedAt, DeletedAt
 	Username          string `gorm:"size:100;not null"`
 	Email             string `gorm:"size:100;uniqueIndex;not null"`
-	PasswordHash      string `gorm:"not null"`
+	PasswordHash      string `gorm:"column:password;not null"`
 	IsVerified        bool
 	VerificationToken string `gorm:"size:255"`
 }
