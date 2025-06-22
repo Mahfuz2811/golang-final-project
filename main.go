@@ -6,6 +6,7 @@ import (
 	"final-golang-project/middlewares"
 	"final-golang-project/redis"
 	"final-golang-project/repositories"
+	"final-golang-project/routes"
 	"final-golang-project/services"
 	"final-golang-project/utils"
 	"fmt"
@@ -25,6 +26,12 @@ func main() {
 		panic(error)
 	}
 
+	gormDatabase, error := db.NewMySQLGormDB()
+	if error != nil {
+		fmt.Println("Error in gorm db.")
+		panic(error)
+	}
+
 	emailSender := utils.DefaultEmailSender{}
 
 	userRepo := repositories.NewMySQLUserRepository(database)
@@ -37,6 +44,18 @@ func main() {
 	router.POST("/login", authHandler.Login)
 
 	router.GET("/user", middlewares.JWTAuthMiddleware(), authHandler.GetUserByEmail)
+
+	// migrate product table
+	// 👇 Call migration
+	if err := db.MigrateProductTable(gormDatabase); err != nil {
+		panic(fmt.Sprintf("Migration failed: %v", err))
+	}
+
+	// product route handler & dependency
+	productRepo := repositories.NewProductRepository(gormDatabase)
+	productService := services.NewProductService(productRepo)
+	productHandler := handlers.NewProductHandler(productService)
+	routes.RegisterProductRoutes(router, productHandler)
 
 	fmt.Println("Starting server on :8080...")
 	if error := router.Run(":8080"); error != nil {

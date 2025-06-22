@@ -1,12 +1,21 @@
 package models
 
+// type User struct {
+// 	Id                int
+// 	Username          string
+// 	Email             string
+// 	PasswordHash      string
+// 	IsVerified        bool
+// 	VerificationToken string
+// }
+
 type User struct {
-	Id                int
-	Username          string
-	Email             string
-	PasswordHash      string
+	Id                uint   `gorm:"primaryKey"`
+	Username          string `gorm:"size:100;not null"`
+	Email             string `gorm:"size:100;uniqueIndex;not null"`
+	PasswordHash      string `gorm:"not null"`
 	IsVerified        bool
-	VerificationToken string
+	VerificationToken string `gorm:"size:255"`
 }
 
 // CREATE TABLE users (
