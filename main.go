@@ -4,6 +4,7 @@ import (
 	"final-golang-project/db"
 	"final-golang-project/handlers"
 	"final-golang-project/middlewares"
+	"final-golang-project/rabbitmq"
 	"final-golang-project/redis"
 	"final-golang-project/repositories"
 	"final-golang-project/routes"
@@ -31,11 +32,16 @@ func main() {
 		panic(error)
 	}
 
-	emailSender := utils.DefaultEmailSender{}
+	rabbitmqClient, error := rabbitmq.NewRabbitMQ()
+	if error != nil {
+		panic(error)
+	}
+
+	emailSender := utils.NewEmailSender(rabbitmqClient)
 
 	userRepo := repositories.NewMySQLUserRepository(database)
 	redisMySQLUserRepo := repositories.NewRedisMySQLUserRepository(userRepo, redisClient)
-	authService := services.NewAuthServe(redisMySQLUserRepo, &emailSender)
+	authService := services.NewAuthServe(redisMySQLUserRepo, emailSender)
 	authHandler := handlers.NewAuthHandler(authService)
 
 	router := gin.Default()

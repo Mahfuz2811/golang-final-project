@@ -49,3 +49,20 @@ func (p *ProductHandler) Create(ctx *gin.Context) {
 		"message": "Product created successfully.",
 	})
 }
+
+func (p *ProductHandler) GetAll(ctx *gin.Context) {
+	products, err := p.service.GetAll()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+
+		return
+	}
+
+	// product
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"products": products,
+	})
+}
