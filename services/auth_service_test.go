@@ -28,8 +28,9 @@ type MockEmailSender struct {
 	mock.Mock
 }
 
-func (m *MockEmailSender) SendVerificationEmail(email, token string) {
-	m.Called(email, token)
+func (m *MockEmailSender) SendVerificationEmail(email, token string) error {
+	args := m.Called(email, token)
+	return args.Error(0)
 }
 
 func TestRegisterUser_Success(t *testing.T) {
@@ -39,7 +40,7 @@ func TestRegisterUser_Success(t *testing.T) {
 
 	mockRepo.On("GetByEmail", "test@example.com").Return((*models.User)(nil), nil)
 	mockRepo.On("Create", mock.AnythingOfType("models.User")).Return(nil)
-	mockEmail.On("SendVerificationEmail", "test@example.com", mock.AnythingOfType("string")).Return()
+	mockEmail.On("SendVerificationEmail", "test@example.com", mock.AnythingOfType("string")).Return(nil)
 
 	err := service.RegisterUser("testuser", "test@example.com", "password123")
 	assert.NoError(t, err)

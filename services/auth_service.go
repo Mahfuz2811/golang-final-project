@@ -61,7 +61,9 @@ func (s *AuthService) RegisterUser(username, email, password string) error {
 	}
 
 	// send verification email
-	s.emailSender.SendVerificationEmail(email, verificationToken)
+	if err := s.emailSender.SendVerificationEmail(email, verificationToken); err != nil {
+		return fmt.Errorf("failed to send verification email: %s", err)
+	}
 
 	return nil
 }
