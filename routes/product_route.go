@@ -12,4 +12,5 @@ func RegisterProductRoutes(router *gin.Engine, handler *handlers.ProductHandler)
 	authGroup.Use(middlewares.JWTAuthMiddleware())
 
 	authGroup.POST("/create", handler.Create)
+	authGroup.GET("/list", handler.List)
 }

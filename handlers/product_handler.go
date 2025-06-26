@@ -49,3 +49,27 @@ func (p *ProductHandler) Create(ctx *gin.Context) {
 		"message": "Product created successfully.",
 	})
 }
+
+func (p *ProductHandler) List(ctx *gin.Context) {
+	userEmail := ctx.GetString("email")
+	if userEmail == "" {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Unauthorized",
+		})
+
+		return
+	}
+
+	products, err := p.service.ListByUserEmail(userEmail)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"products": products,
+	})
+}

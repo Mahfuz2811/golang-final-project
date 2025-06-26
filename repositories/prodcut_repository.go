@@ -28,3 +28,12 @@ func (r *ProductRepository) Create(product *models.Product) error {
 	return r.db.Create(product).Error
 
 }
+
+func (r *ProductRepository) ListByUserEmail(userEmail string) ([]models.Product, error) {
+	var products []models.Product
+	err := r.db.Where("user_email = ?", userEmail).Find(&products).Error
+	if err != nil {
+		return nil, err
+	}
+	return products, nil
+}
