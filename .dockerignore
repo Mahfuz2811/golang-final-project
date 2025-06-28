@@ -1,0 +1,31 @@
+# Build artifacts
+final-golang-project
+*.out
+coverage.out
+
+# Development files
+.git
+.gitignore
+README.md
+test.txt
+
+# Docker files
+docker/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log
+
+# Node modules (if any)
+node_modules/
+
+# Environment files (will be handled by env_file in compose)
+*.env

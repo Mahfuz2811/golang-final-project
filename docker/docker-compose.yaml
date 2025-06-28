@@ -1,0 +1,31 @@
+services:
+  migration:
+    build:
+      context: ..
+      dockerfile: docker/app/Dockerfile
+    container_name: golang-final-project-migration
+    env_file:
+      - .envs/app.env
+    networks:
+      - common-net
+    command: ["go", "run", "cmd/migrate.go"]
+    restart: "no"
+
+  golang-final-project:
+    build:
+      context: ..
+      dockerfile: docker/app/Dockerfile
+    container_name: golang-final-project-app
+    env_file:
+      - .envs/app.env
+    ports:
+      - "8080:8080"
+    networks:
+      - common-net
+    restart: unless-stopped
+    depends_on:
+      - migration
+
+networks:
+  common-net:
+    external: true

@@ -1,12 +1,13 @@
 package utils
 
 import (
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var jwtSecret = []byte("my_secret_key")
+var jwtSecret = []byte(getEnv("JWT_SECRET", "my_secret_key"))
 
 func GenerateJwt(email string) (string, error) {
 	claims := jwt.MapClaims{
@@ -29,4 +30,11 @@ func ValidateJwt(tokenString string) (*jwt.Token, error) {
 
 		return jwtSecret, nil
 	})
+}
+
+func getEnv(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
 }

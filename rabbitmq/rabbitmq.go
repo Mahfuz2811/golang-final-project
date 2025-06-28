@@ -3,6 +3,8 @@ package rabbitmq
 import (
 	"encoding/json"
 	"final-golang-project/models"
+	"fmt"
+	"os"
 
 	"github.com/streadway/amqp"
 )
@@ -13,8 +15,13 @@ type RabbitMQ struct {
 }
 
 func NewRabbitMQ() (*RabbitMQ, error) {
-	url := "amqp://guest:guest@localhost:5672/"
-	queueName := "email_queue"
+	host := getEnv("RABBITMQ_HOST", "localhost")
+	port := getEnv("RABBITMQ_PORT", "5672")
+	user := getEnv("RABBITMQ_USER", "guest")
+	password := getEnv("RABBITMQ_PASSWORD", "guest")
+	queueName := getEnv("RABBITMQ_QUEUE", "email_queue")
+
+	url := fmt.Sprintf("amqp://%s:%s@%s:%s/", user, password, host, port)
 
 	conn, err := amqp.Dial(url)
 	if err != nil {
@@ -57,4 +64,11 @@ func (r *RabbitMQ) Publish(message models.EmailMessage) error {
 			Body:        rawMessage,
 		},
 	)
+}
+
+func getEnv(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
 }

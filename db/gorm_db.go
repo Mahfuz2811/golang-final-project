@@ -8,7 +8,13 @@ import (
 )
 
 func NewMySqlGormDB() (*gorm.DB, error) {
-	connectionString := "root:secret@tcp(127.0.0.1:3306)/registration?parseTime=true"
+	host := getEnv("DB_HOST", "127.0.0.1")
+	port := getEnv("DB_PORT", "3306")
+	user := getEnv("DB_USER", "root")
+	password := getEnv("DB_PASSWORD", "secret")
+	dbname := getEnv("DB_NAME", "registration")
+
+	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", user, password, host, port, dbname)
 
 	database, err := gorm.Open(mysql.Open(connectionString), &gorm.Config{})
 	if err != nil {
